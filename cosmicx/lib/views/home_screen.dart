@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../data/repositories/nasa_repository.dart';
 import '../data/models/apod_model.dart';
+import 'quiz_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -159,7 +160,10 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Icons.sports_esports,
               color: theme.primaryColor,
               onTap: () {
-                // Navigate to Quiz (To be implemented)
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const QuizScreen()),
+                );
               },
             ),
             const SizedBox(height: 16),
