@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "163544206792",
+    "project_id": "cosmicx-project",
+    "storage_bucket": "cosmicx-project.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:163544206792:android:eda2e579915f8e1859c4fd",
+        "android_client_info": {
+          "package_name": "com.example.cosmicx"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWsqpfOrly5naGsU1SjJmW_l7uvbkgxS8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
