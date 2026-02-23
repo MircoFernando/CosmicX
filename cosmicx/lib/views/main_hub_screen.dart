@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart'; // Required for ProfileScreen
+import 'home_screen.dart'; // Placeholder for Explore tab
 
 class MainHubScreen extends StatefulWidget {
   const MainHubScreen({super.key});
@@ -16,9 +17,9 @@ class _MainHubScreenState extends State<MainHubScreen> {
   // but mostly to keep the list dynamic and clean.
   List<Widget> get _screens => [
     // Tab 0: Home (Placeholder for now)
-    const Center(child: Text('Home Screen: NASA APOD will go here')),
+    const HomeScreen(),
 
-    // Tab 1: Explore (Placeholder)
+    // Tab 1:
     const Center(child: Text('Explore Screen: Mission list')),
 
     // Tab 2: Leaderboard (Placeholder)
