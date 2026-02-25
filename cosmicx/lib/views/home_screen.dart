@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../data/repositories/nasa_repository.dart';
 import '../data/models/apod_model.dart';
+import '../data/repositories/user_repository.dart'; // <--- 1. ADDED IMPORT
 import 'quiz_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -11,13 +12,26 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final NasaRepository _repository = NasaRepository();
+  final NasaRepository _nasaRepository = NasaRepository();
+
+  // <--- 2. ADDED MISSING VARIABLES --->
+  final UserRepository _userRepo = UserRepository();
+  int _totalXp = 0;
+
   late Future<ApodModel> _apodFuture;
 
   @override
   void initState() {
     super.initState();
-    _apodFuture = _repository.fetchApod();
+    _apodFuture = _nasaRepository.fetchApod();
+    _loadXp(); // 3. Make sure to call this!
+  }
+
+  Future<void> _loadXp() async {
+    final xp = await _userRepo.getUserScore();
+    setState(() {
+      _totalXp = xp;
+    });
   }
 
   @override
@@ -25,14 +39,12 @@ class _HomeScreenState extends State<HomeScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      // App Bar title as per design
       appBar: AppBar(
         title: Text("COSMIC QUEST", style: theme.textTheme.headlineSmall),
         centerTitle: false,
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
-          // Points Display [cite: 320]
           Container(
             margin: const EdgeInsets.only(right: 16),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -46,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Icon(Icons.star, color: theme.primaryColor, size: 16),
                 const SizedBox(width: 4),
                 Text(
-                  "0 XP",
+                  "$_totalXp XP", // Now this variable exists!
                   style: TextStyle(
                     color: theme.primaryColor,
                     fontWeight: FontWeight.bold,
@@ -62,7 +74,6 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Greeting Section
             Text(
               "Hello Cadet!",
               style: theme.textTheme.displayLarge?.copyWith(fontSize: 28),
@@ -74,7 +85,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 24),
 
-            // APOD Section (The "Interesting Fact" & Image)
             Text(
               "ASTRONOMY PICTURE OF THE DAY",
               style: TextStyle(
@@ -90,12 +100,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
+                  // Graceful error handling
                   return Container(
                     padding: const EdgeInsets.all(20),
-                    color: Colors.red.withOpacity(0.1),
-                    child: Text(
-                      "Error: ${snapshot.error}",
-                      style: const TextStyle(color: Colors.red),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.wifi_off, color: Colors.red),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            "Offline: ${snapshot.error}",
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 } else if (snapshot.hasData) {
@@ -105,7 +127,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // The Image
                         Image.network(
                           apod.url,
                           height: 200,
@@ -132,7 +153,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              // "Interesting Fact" Description [cite: 276]
                               Text(
                                 apod.explanation,
                                 maxLines: 3,
@@ -152,18 +172,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: 24),
 
-            // Navigation Cards
             _buildNavCard(
               context,
               title: "Take a Quest!",
               subtitle: "Explore the Multiverse",
               icon: Icons.sports_esports,
               color: theme.primaryColor,
-              onTap: () {
-                Navigator.push(
+              onTap: () async {
+                // Wait for quiz to finish, then reload points
+                await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const QuizScreen()),
                 );
+                _loadXp();
               },
             ),
             const SizedBox(height: 16),
@@ -172,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
               title: "Space Now",
               subtitle: "Live Rover & Solar Data",
               icon: Icons.satellite_alt,
-              color: Colors.purpleAccent, // Differentiate secondary action
+              color: Colors.purpleAccent,
               onTap: () {
                 // Navigate to Explore Tab
               },

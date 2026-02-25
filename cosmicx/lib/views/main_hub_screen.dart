@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart'; // Required for ProfileScreen
 import 'home_screen.dart'; // Placeholder for Explore tab
+import 'explore_screen.dart'; // Placeholder for Explore tab
+import 'leadership_screen.dart';
 
 class MainHubScreen extends StatefulWidget {
   const MainHubScreen({super.key});
@@ -20,10 +22,10 @@ class _MainHubScreenState extends State<MainHubScreen> {
     const HomeScreen(),
 
     // Tab 1:
-    const Center(child: Text('Explore Screen: Mission list')),
+    const ExploreScreen(),
 
     // Tab 2: Leaderboard (Placeholder)
-    const Center(child: Text('Leaderboard: High scores')),
+    const LeaderboardScreen(),
 
     // Tab 3: Profile (REAL Implementation)
     ProfileScreen(

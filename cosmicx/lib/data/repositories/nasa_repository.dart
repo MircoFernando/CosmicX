@@ -36,4 +36,62 @@ class NasaRepository {
       throw Exception('Offline: No cosmic data cached.');
     }
   }
+
+  // 1. Fetch Near Earth Objects (Asteroids)
+  Future<List<Map<String, dynamic>>> fetchAsteroids() async {
+    final now = DateTime.now();
+    final formattedDate =
+        "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+
+    final url =
+        'https://api.nasa.gov/neo/rest/v1/feed?start_date=$formattedDate&end_date=$formattedDate&api_key=$_apiKey';
+
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final Map<String, dynamic> dates = data['near_earth_objects'];
+
+      // The API returns a map with the date as the key. We just want the list.
+      if (dates.containsKey(formattedDate)) {
+        return List<Map<String, dynamic>>.from(dates[formattedDate]);
+      }
+      return [];
+    } else {
+      throw Exception('Failed to track asteroids.');
+    }
+  }
+
+  // 3. Fetch Earth Gallery (NASA Image Library) - 100% Reliable
+  Future<List<Map<String, dynamic>>> fetchEarthGallery() async {
+    // We search for "Earth" and ensure we only get "images"
+    final url = 'https://images-api.nasa.gov/search?q=earth&media_type=image';
+
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final List items = data['collection']['items'];
+
+      // Transform the complex NASA data into a simple list
+      return items
+          .take(20)
+          .map((item) {
+            final data = item['data'][0];
+            final links = item['links'] as List;
+
+            return {
+              'title': data['title'],
+              'description': data['description'] ?? 'No description.',
+              // Use the 'href' of the first link (usually the thumbnail/small image)
+              'image': links.isNotEmpty ? links[0]['href'] : '',
+              'date': data['date_created'],
+            };
+          })
+          .toList()
+          .cast<Map<String, dynamic>>();
+    } else {
+      throw Exception('Failed to load Earth Gallery.');
+    }
+  }
 }

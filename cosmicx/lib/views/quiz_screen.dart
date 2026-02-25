@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../data/repositories/quiz_repository.dart';
 import '../data/models/quiz_question.dart';
+import '../data/repositories/user_repository.dart';
 
 class QuizScreen extends StatefulWidget {
   const QuizScreen({super.key});
@@ -11,23 +12,24 @@ class QuizScreen extends StatefulWidget {
 
 class _QuizScreenState extends State<QuizScreen> {
   final QuizRepository _repository = QuizRepository();
+  final UserRepository _userRepo = UserRepository();
+
   List<QuizQuestion> _questions = [];
 
-  // State variables
   int _currentIndex = 0;
+  int _sessionScore = 0;
   bool _isLoadingQuiz = true;
   bool _isLoadingContent = true;
   bool _answered = false;
   String? _selectedAnswer;
   ApiContent? _currentApiContent;
+  String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
     _loadQuiz();
   }
-
-  String? _errorMessage;
 
   Future<void> _loadQuiz() async {
     try {
@@ -75,9 +77,16 @@ class _QuizScreenState extends State<QuizScreen> {
 
   void _checkAnswer(String answer) {
     if (_answered) return;
+
+    // FIX 1: Use .answer (matches your Model)
+    final isCorrect = answer == _questions[_currentIndex].answer;
+
     setState(() {
       _answered = true;
       _selectedAnswer = answer;
+      if (isCorrect) {
+        _sessionScore += 20;
+      }
     });
   }
 
@@ -90,8 +99,104 @@ class _QuizScreenState extends State<QuizScreen> {
       });
       _loadCurrentQuestionContent();
     } else {
-      Navigator.pop(context);
+      _finishQuiz();
     }
+  }
+
+  Future<void> _finishQuiz() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    final newTotalScore = await _userRepo.updateUserScore(_sessionScore);
+
+    if (mounted) Navigator.pop(context);
+    if (mounted) _showEndScreen(newTotalScore);
+  }
+
+  void _showEndScreen(int totalCareerScore) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF0B0D17),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: Color(0xFF00D4FF), width: 2),
+        ),
+        title: const Text(
+          "MISSION ACCOMPLISHED",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Orbitron',
+          ),
+          textAlign: TextAlign.center,
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.stars, color: Colors.yellowAccent, size: 50),
+            const SizedBox(height: 20),
+            _buildScoreRow(
+              "Mission XP:",
+              "+$_sessionScore",
+              Colors.greenAccent,
+            ),
+            const Divider(color: Colors.grey),
+            _buildScoreRow(
+              "Total Career XP:",
+              "$totalCareerScore",
+              const Color(0xFF00D4FF),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              "Database updated successfully.",
+              style: TextStyle(color: Colors.grey, fontSize: 12),
+            ),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF00D4FF),
+              foregroundColor: Colors.black,
+              minimumSize: const Size(double.infinity, 50),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context, true);
+            },
+            child: const Text("RETURN TO BASE"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildScoreRow(String label, String value, Color color) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(color: Colors.white70, fontSize: 16),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              color: color,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showHint() {
@@ -129,6 +234,7 @@ class _QuizScreenState extends State<QuizScreen> {
       );
 
     final currentQ = _questions[_currentIndex];
+    // FIX 2: Use .answer
     final bool isCorrect = _selectedAnswer == currentQ.answer;
 
     return Scaffold(
@@ -147,7 +253,6 @@ class _QuizScreenState extends State<QuizScreen> {
       ),
       body: Column(
         children: [
-          // 1. Dynamic Image Area
           Expanded(
             flex: 4,
             child: Container(
@@ -172,8 +277,6 @@ class _QuizScreenState extends State<QuizScreen> {
                     ),
             ),
           ),
-
-          // 2. Question Text
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
@@ -182,8 +285,6 @@ class _QuizScreenState extends State<QuizScreen> {
               textAlign: TextAlign.center,
             ),
           ),
-
-          // 3. Feedback Indicator (Shows only when answered)
           if (_answered)
             Padding(
               padding: const EdgeInsets.only(top: 10),
@@ -210,7 +311,7 @@ class _QuizScreenState extends State<QuizScreen> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      isCorrect ? "CORRECT!" : "WRONG ANSWER",
+                      isCorrect ? "CORRECT! +20 XP" : "WRONG ANSWER",
                       style: TextStyle(
                         color: isCorrect ? Colors.green : Colors.red,
                         fontWeight: FontWeight.bold,
@@ -221,10 +322,7 @@ class _QuizScreenState extends State<QuizScreen> {
                 ),
               ),
             ),
-
-          const SizedBox(height: 30),
-
-          // 4. Answer Grid
+          const SizedBox(height: 10),
           Expanded(
             flex: 5,
             child: Padding(
@@ -240,23 +338,27 @@ class _QuizScreenState extends State<QuizScreen> {
                 itemCount: 4,
                 itemBuilder: (context, index) {
                   if (index >= currentQ.options.length) return const SizedBox();
-
                   final option = currentQ.options[index];
                   final bool isOptionCorrect = option == currentQ.answer;
                   final bool isOptionSelected = option == _selectedAnswer;
 
-                  Color cardColor = Colors.deepPurple; // Default Purple
+                  // --- COLOR LOGIC ---
+                  Color cardColor = Colors.deepPurple;
                   Color borderColor = Colors.deepPurpleAccent;
 
                   if (_answered) {
                     if (isOptionCorrect) {
-                      // Always show the correct answer in Green
+                      // Correct Answer: ALWAYS Green
                       cardColor = Colors.green.shade700;
                       borderColor = Colors.greenAccent;
-                    } else {
-                      // Everything else is Red
+                    } else if (isOptionSelected) {
+                      // Selected Wrong Answer: Bright Red
                       cardColor = Colors.red.shade800;
                       borderColor = Colors.redAccent;
+                    } else {
+                      // Unselected Wrong Answers
+                      cardColor = Colors.red;
+                      borderColor = Colors.red;
                     }
                   }
 
@@ -272,16 +374,8 @@ class _QuizScreenState extends State<QuizScreen> {
                           width:
                               _answered && (isOptionCorrect || isOptionSelected)
                               ? 3
-                              : 1, // Make selected/correct borders thicker
+                              : 1,
                         ),
-                        boxShadow: [
-                          if (_answered && isOptionCorrect)
-                            BoxShadow(
-                              color: Colors.green.withOpacity(0.5),
-                              blurRadius: 10,
-                              spreadRadius: 1,
-                            ),
-                        ],
                       ),
                       alignment: Alignment.center,
                       child: Padding(
@@ -302,59 +396,6 @@ class _QuizScreenState extends State<QuizScreen> {
               ),
             ),
           ),
-
-          // 5. Hint Section
-          if (_currentApiContent?.hint != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.amber.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Colors.yellowAccent.withOpacity(0.5),
-                    width: 1,
-                  ),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(
-                      Icons.lightbulb_outline,
-                      color: Colors.yellowAccent,
-                      size: 24,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Mission Intel",
-                            style: TextStyle(
-                              color: Colors.yellowAccent,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            _currentApiContent!.hint!,
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.9),
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-          // 6. Next Button
           if (_answered)
             Padding(
               padding: const EdgeInsets.all(20.0),
