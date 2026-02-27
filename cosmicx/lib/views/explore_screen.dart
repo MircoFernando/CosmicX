@@ -55,10 +55,7 @@ class _ExploreScreenState extends State<ExploreScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          _buildAsteroidTab(theme), // <--- This is the method you were missing
-          _buildGalleryTab(theme),
-        ],
+        children: [_buildAsteroidTab(theme), _buildGalleryTab(theme)],
       ),
     );
   }
