@@ -491,34 +491,6 @@ class _QuizScreenState extends State<QuizScreen> {
 
     return Scaffold(
       appBar: appBar,
-          Container(
-            margin: const EdgeInsets.only(right: 12),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.amber.withOpacity(0.3),
-                  Colors.amber.withOpacity(0.1),
-                ],
-              ),
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.amber.withOpacity(0.2),
-                  blurRadius: 8,
-                  spreadRadius: 1,
-                ),
-              ],
-            ),
-            child: IconButton(
-              icon: const Icon(
-                Icons.tips_and_updates_rounded,
-                color: Colors.amber,
-              ),
-              onPressed: _showHint,
-            ),
-          ),
-        ],
-      ),
       body: Column(
         children: [
           Expanded(
