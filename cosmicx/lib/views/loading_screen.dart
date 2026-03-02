@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'dart:async'; // For the Timer
 import 'auth_gate.dart'; // <--- CHANGED: Import the Gate, not the Login Screen
 
@@ -35,15 +36,20 @@ class _LoadingScreenState extends State<LoadingScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.rocket_launch,
+            Icon(
+              Icons.rocket_launch_rounded,
               size: 100,
-              color: Color(0xFF00D4FF),
+              color: Theme.of(context).primaryColor,
             ),
             const SizedBox(height: 20),
             Text(
               "COSMIC QUEST",
-              style: Theme.of(context).textTheme.displayLarge,
+              style: GoogleFonts.orbitron(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 2,
+                color: Theme.of(context).primaryColor,
+              ),
             ),
             const SizedBox(height: 50),
             SizedBox(
@@ -54,9 +60,9 @@ class _LoadingScreenState extends State<LoadingScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            const Text(
+            Text(
               "Initializing systems...",
-              style: TextStyle(color: Colors.grey),
+              style: GoogleFonts.inter(color: Colors.grey[600], fontSize: 14),
             ),
           ],
         ),

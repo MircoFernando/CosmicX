@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -46,8 +47,11 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile updated successfully!'),
+          SnackBar(
+            content: Text(
+              'Profile updated successfully!',
+              style: GoogleFonts.inter(),
+            ),
             backgroundColor: Colors.green,
           ),
         );
@@ -56,7 +60,10 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error updating profile: $e'),
+            content: Text(
+              'Error updating profile: $e',
+              style: GoogleFonts.inter(),
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -70,16 +77,19 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Sign Out'),
-        content: const Text('Are you sure you want to sign out?'),
+        title: Text('Sign Out', style: GoogleFonts.orbitron()),
+        content: Text(
+          'Are you sure you want to sign out?',
+          style: GoogleFonts.inter(),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text('Cancel', style: GoogleFonts.inter()),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Sign Out'),
+            child: Text('Sign Out', style: GoogleFonts.inter()),
           ),
         ],
       ),
@@ -98,19 +108,20 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Account'),
-        content: const Text(
+        title: Text('Delete Account', style: GoogleFonts.orbitron()),
+        content: Text(
           'Are you sure you want to delete your account? This action cannot be undone.',
+          style: GoogleFonts.inter(),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text('Cancel', style: GoogleFonts.inter()),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: Text('Delete', style: GoogleFonts.inter()),
           ),
         ],
       ),
@@ -126,8 +137,11 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Account deleted successfully'),
+            SnackBar(
+              content: Text(
+                'Account deleted successfully',
+                style: GoogleFonts.inter(),
+              ),
               backgroundColor: Colors.green,
             ),
           );
@@ -136,7 +150,10 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error deleting account: $e'),
+              content: Text(
+                'Error deleting account: $e',
+                style: GoogleFonts.inter(),
+              ),
               backgroundColor: Colors.red,
             ),
           );
@@ -152,7 +169,13 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile Settings'),
+        title: Text(
+          'SETTINGS',
+          style: GoogleFonts.orbitron(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.5,
+          ),
+        ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -165,8 +188,10 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
             // Profile Information Section
             Text(
               'Profile Information',
-              style: theme.textTheme.headlineSmall?.copyWith(
+              style: GoogleFonts.orbitron(
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
               ),
             ),
             const SizedBox(height: 20),
@@ -201,8 +226,11 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                           color: Colors.white,
                         ),
                       )
-                    : const Icon(Icons.save),
-                label: Text(_isLoading ? 'Updating...' : 'Update Profile'),
+                    : const Icon(Icons.save_rounded),
+                label: Text(
+                  _isLoading ? 'Updating...' : 'Update Profile',
+                  style: GoogleFonts.orbitron(fontWeight: FontWeight.bold),
+                ),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
@@ -219,8 +247,10 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
             // Account Information (Read-only)
             Text(
               'Account Information',
-              style: theme.textTheme.headlineSmall?.copyWith(
+              style: GoogleFonts.orbitron(
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
               ),
             ),
             const SizedBox(height: 20),
@@ -245,8 +275,10 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
             // Account Actions
             Text(
               'Account Actions',
-              style: theme.textTheme.headlineSmall?.copyWith(
+              style: GoogleFonts.orbitron(
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
               ),
             ),
             const SizedBox(height: 20),
@@ -256,8 +288,11 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               width: double.infinity,
               child: OutlinedButton.icon(
                 onPressed: _signOut,
-                icon: const Icon(Icons.logout),
-                label: const Text('Sign Out'),
+                icon: const Icon(Icons.logout_rounded),
+                label: Text(
+                  'Sign Out',
+                  style: GoogleFonts.orbitron(fontWeight: FontWeight.bold),
+                ),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
@@ -273,8 +308,11 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               width: double.infinity,
               child: OutlinedButton.icon(
                 onPressed: _deleteAccount,
-                icon: const Icon(Icons.delete_forever),
-                label: const Text('Delete Account'),
+                icon: const Icon(Icons.delete_forever_rounded),
+                label: Text(
+                  'Delete Account',
+                  style: GoogleFonts.orbitron(fontWeight: FontWeight.bold),
+                ),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.red,
                   side: const BorderSide(color: Colors.red),
@@ -314,12 +352,15 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               children: [
                 Text(
                   label,
-                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                  style: GoogleFonts.inter(
+                    color: Colors.grey[600],
+                    fontSize: 12,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   value,
-                  style: const TextStyle(
+                  style: GoogleFonts.inter(
                     fontWeight: FontWeight.w500,
                     fontSize: 14,
                   ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart'; // The magic package
+import 'package:google_fonts/google_fonts.dart';
 import 'main_hub_screen.dart'; // Your Home Screen
 
 class AuthGate extends StatelessWidget {
@@ -27,7 +28,7 @@ class AuthGate extends StatelessWidget {
               child: AspectRatio(
                 aspectRatio: 1,
                 child: Icon(
-                  Icons.rocket_launch,
+                  Icons.rocket_launch_rounded,
                   size: 100,
                   color: Theme.of(context).primaryColor,
                 ),
@@ -38,16 +39,22 @@ class AuthGate extends StatelessWidget {
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: action == AuthAction.signIn
-                  ? const Text('Welcome back, Commander. Please sign in.')
-                  : const Text('New recruit? Register below.'),
+                  ? Text(
+                      'Welcome back, Commander. Please sign in.',
+                      style: GoogleFonts.inter(),
+                    )
+                  : Text(
+                      'New recruit? Register below.',
+                      style: GoogleFonts.inter(),
+                    ),
             );
           },
           footerBuilder: (context, action) {
-            return const Padding(
-              padding: EdgeInsets.only(top: 16),
+            return Padding(
+              padding: const EdgeInsets.only(top: 16),
               child: Text(
                 'By signing in, you agree to our interstellar terms and conditions.',
-                style: TextStyle(color: Colors.grey),
+                style: GoogleFonts.inter(color: Colors.grey),
               ),
             );
           },

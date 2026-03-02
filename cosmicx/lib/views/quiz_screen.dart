@@ -324,13 +324,17 @@ class _QuizScreenState extends State<QuizScreen> {
     if (_isLoadingQuiz)
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     if (_questions.isEmpty)
-      return const Scaffold(body: Center(child: Text("No quests available.")));
+      return Scaffold(
+        body: Center(
+          child: Text("No quests available.", style: GoogleFonts.inter()),
+        ),
+      );
     if (_errorMessage != null)
       return Scaffold(
         body: Center(
           child: Text(
             _errorMessage!,
-            style: const TextStyle(color: Colors.red),
+            style: GoogleFonts.inter(color: Colors.red),
           ),
         ),
       );

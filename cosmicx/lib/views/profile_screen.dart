@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../data/repositories/user_repository.dart';
 import 'profile_settings_screen.dart';
@@ -36,21 +37,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: Text(
+          'PROFILE',
+          style: GoogleFonts.orbitron(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.5,
+          ),
+        ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ProfileSettingsScreen(),
-                ),
-              );
-            },
+          Container(
+            margin: const EdgeInsets.only(right: 12),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  theme.primaryColor.withOpacity(0.3),
+                  theme.primaryColor.withOpacity(0.1),
+                ],
+              ),
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              icon: Icon(Icons.settings_rounded, color: theme.primaryColor),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileSettingsScreen(),
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -95,9 +114,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // User Name
                     Text(
                       user?.displayName ?? 'Cosmic Explorer',
-                      style: theme.textTheme.headlineMedium?.copyWith(
+                      style: GoogleFonts.orbitron(
                         fontWeight: FontWeight.bold,
                         fontSize: 28,
+                        letterSpacing: 0.5,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -106,8 +126,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // Email
                     Text(
                       user?.email ?? '',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey,
+                      style: GoogleFonts.inter(
+                        color: Colors.grey[600],
+                        fontSize: 14,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -145,7 +166,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           const SizedBox(height: 16),
                           Text(
                             'Total Points',
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               color: Colors.white.withOpacity(0.9),
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
@@ -154,10 +175,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           const SizedBox(height: 8),
                           Text(
                             '$_userPoints XP',
-                            style: const TextStyle(
+                            style: GoogleFonts.orbitron(
                               color: Colors.white,
                               fontSize: 42,
                               fontWeight: FontWeight.bold,
+                              letterSpacing: 1,
                             ),
                           ),
                         ],
@@ -209,11 +231,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Icon(icon, color: theme.primaryColor, size: 30),
           const SizedBox(height: 12),
-          Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+          Text(
+            label,
+            style: GoogleFonts.inter(color: Colors.grey[600], fontSize: 12),
+          ),
           const SizedBox(height: 4),
           Text(
             value,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            style: GoogleFonts.orbitron(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
           ),
         ],
       ),

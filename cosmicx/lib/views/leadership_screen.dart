@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../data/repositories/user_repository.dart';
 
@@ -57,7 +58,13 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Leaderboard'),
+        title: Text(
+          'LEADERBOARD',
+          style: GoogleFonts.orbitron(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.5,
+          ),
+        ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -72,8 +79,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 children: [
                   Text(
                     'Top Explorers',
-                    style: theme.textTheme.headlineSmall?.copyWith(
+                    style: GoogleFonts.orbitron(
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -145,16 +154,17 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                               ),
                               child: Text(
                                 '${actualIndex + 1}',
-                                style: TextStyle(
+                                style: GoogleFonts.orbitron(
                                   color: theme.primaryColor,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
+                                  letterSpacing: 1,
                                 ),
                               ),
                             ),
                             title: Text(
                               player['name'],
-                              style: TextStyle(
+                              style: GoogleFonts.inter(
                                 fontWeight: isMe
                                     ? FontWeight.bold
                                     : FontWeight.w500,
@@ -172,7 +182,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                               ),
                               child: Text(
                                 '${player['score']} XP',
-                                style: TextStyle(
+                                style: GoogleFonts.orbitron(
                                   fontWeight: FontWeight.bold,
                                   color: theme.primaryColor,
                                   fontSize: 14,
@@ -186,7 +196,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   : Center(
                       child: Text(
                         'No more players',
-                        style: TextStyle(color: Colors.grey[600]),
+                        style: GoogleFonts.inter(color: Colors.grey[600]),
                       ),
                     ),
             ),
@@ -232,16 +242,17 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 children: [
                   Text(
                     user?.displayName ?? 'Cosmic Explorer',
-                    style: const TextStyle(
+                    style: GoogleFonts.orbitron(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                       fontSize: 16,
+                      letterSpacing: 0.5,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
                     'My Rank',
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                       fontSize: 12,
                       color: Colors.white.withOpacity(0.8),
                     ),
@@ -255,15 +266,16 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               children: [
                 Text(
                   _myRank > 0 ? '#$_myRank' : 'Unranked',
-                  style: const TextStyle(
+                  style: GoogleFonts.orbitron(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 20,
+                    letterSpacing: 0.5,
                   ),
                 ),
                 Text(
                   '$_myScore XP',
-                  style: TextStyle(
+                  style: GoogleFonts.orbitron(
                     color: Colors.white.withOpacity(0.9),
                     fontWeight: FontWeight.w500,
                     fontSize: 14,
@@ -334,7 +346,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
+            style: GoogleFonts.inter(
               fontWeight: FontWeight.bold,
               fontSize: 13,
               color: isMe ? theme.primaryColor : null,
@@ -353,10 +365,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             ),
             child: Text(
               '${player['score']} XP',
-              style: TextStyle(
+              style: GoogleFonts.orbitron(
                 color: color,
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
               ),
             ),
           ),
