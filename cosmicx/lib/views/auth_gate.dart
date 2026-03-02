@@ -5,7 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'main_hub_screen.dart'; // Your Home Screen
 
 class AuthGate extends StatelessWidget {
-  const AuthGate({super.key});
+  final Function(bool)? onThemeChange;
+
+  const AuthGate({super.key, this.onThemeChange});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +16,7 @@ class AuthGate extends StatelessWidget {
       builder: (context, snapshot) {
         // 1. If user is logged in, show the App
         if (snapshot.hasData) {
-          return const MainHubScreen();
+          return MainHubScreen(onThemeChange: onThemeChange);
         }
 
         // 2. If user is NOT logged in, show the Pre-built Login Screen

@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../services/theme_service.dart';
 
 class ProfileSettingsScreen extends StatefulWidget {
-  const ProfileSettingsScreen({super.key});
+  final Function(bool)? onThemeChange;
+
+  const ProfileSettingsScreen({super.key, this.onThemeChange});
 
   @override
   State<ProfileSettingsScreen> createState() => _ProfileSettingsScreenState();
@@ -14,18 +17,31 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   final TextEditingController _nameController = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool _isLoading = false;
+  bool _isDarkMode = false;
 
   @override
   void initState() {
     super.initState();
     final user = FirebaseAuth.instance.currentUser;
     _nameController.text = user?.displayName ?? '';
+    _loadThemePreference();
   }
 
-  @override
-  void dispose() {
-    _nameController.dispose();
-    super.dispose();
+  Future<void> _loadThemePreference() async {
+    final isDark = await ThemeService.isDarkMode();
+    setState(() {
+      _isDarkMode = isDark;
+    });
+  }
+
+  Future<void> _toggleDarkMode(bool value) async {
+    setState(() {
+      _isDarkMode = value;
+    });
+    await ThemeService.setDarkMode(value);
+    if (widget.onThemeChange != null) {
+      widget.onThemeChange!(value);
+    }
   }
 
   Future<void> _updateDisplayName() async {
@@ -266,6 +282,72 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               icon: Icons.fingerprint,
               label: 'User ID',
               value: user?.uid ?? 'Not available',
+            ),
+            const SizedBox(height: 30),
+
+            const Divider(),
+            const SizedBox(height: 20),
+
+            // Appearance Section
+            Text(
+              'Appearance',
+              style: GoogleFonts.orbitron(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Dark Mode Toggle
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: theme.cardColor,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: theme.primaryColor.withOpacity(0.2)),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        _isDarkMode
+                            ? Icons.dark_mode_rounded
+                            : Icons.light_mode_rounded,
+                        color: theme.primaryColor,
+                      ),
+                      const SizedBox(width: 16),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Dark Mode',
+                            style: GoogleFonts.inter(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            _isDarkMode ? 'Enabled' : 'Disabled',
+                            style: GoogleFonts.inter(
+                              color: Colors.grey[600],
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Switch(
+                    value: _isDarkMode,
+                    onChanged: _toggleDarkMode,
+                    activeColor: theme.primaryColor,
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 30),
 

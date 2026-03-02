@@ -98,6 +98,22 @@ class AppTheme {
         bodyLarge: GoogleFonts.inter(fontSize: 16, color: textBlack),
       ),
 
+      // Input Fields (Login/Signup)
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: const Color(0xFFE8E8F0),
+        labelStyle: const TextStyle(color: Colors.grey),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: deepNavy),
+        ),
+      ),
+
+      // Buttons
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: deepNavy,
@@ -111,6 +127,14 @@ class AppTheme {
             fontWeight: FontWeight.bold,
           ),
         ),
+      ),
+
+      // Bottom Nav Bar
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: skyWhite,
+        selectedItemColor: deepNavy,
+        unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }

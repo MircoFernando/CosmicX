@@ -5,7 +5,9 @@ import '../data/repositories/user_repository.dart';
 import 'profile_settings_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final Function(bool)? onThemeChange;
+
+  const ProfileScreen({super.key, this.onThemeChange});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -65,7 +67,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const ProfileSettingsScreen(),
+                    builder: (context) => ProfileSettingsScreen(
+                      onThemeChange: widget.onThemeChange,
+                    ),
                   ),
                 );
               },

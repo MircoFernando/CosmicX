@@ -5,7 +5,9 @@ import 'leadership_screen.dart';
 import 'profile_screen.dart';
 
 class MainHubScreen extends StatefulWidget {
-  const MainHubScreen({super.key});
+  final Function(bool)? onThemeChange;
+
+  const MainHubScreen({super.key, this.onThemeChange});
 
   @override
   State<MainHubScreen> createState() => _MainHubScreenState();
@@ -18,7 +20,7 @@ class _MainHubScreenState extends State<MainHubScreen> {
     const HomeScreen(),
     const ExploreScreen(),
     const LeaderboardScreen(),
-    const ProfileScreen(),
+    ProfileScreen(onThemeChange: widget.onThemeChange),
   ];
 
   void _onItemTapped(int index) {

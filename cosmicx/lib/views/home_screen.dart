@@ -4,9 +4,12 @@ import '../data/repositories/nasa_repository.dart';
 import '../data/models/apod_model.dart';
 import '../data/repositories/user_repository.dart'; // <--- 1. ADDED IMPORT
 import 'quiz_screen.dart';
+import 'explore_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final VoidCallback? onNavigateToExplore;
+
+  const HomeScreen({super.key, this.onNavigateToExplore});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -321,7 +324,12 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Icons.satellite_alt_rounded,
               color: Colors.deepPurpleAccent,
               onTap: () {
-                // Navigate to Explore Tab
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ExploreScreen(),
+                  ),
+                );
               },
             ),
           ],
