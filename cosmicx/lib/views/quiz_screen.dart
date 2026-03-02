@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import '../data/repositories/quiz_repository.dart';
 import '../data/models/quiz_question.dart';
 import '../data/repositories/user_repository.dart';
@@ -15,6 +17,8 @@ class _QuizScreenState extends State<QuizScreen> {
   final QuizRepository _repository = QuizRepository();
   final UserRepository _userRepo = UserRepository();
 
+  final FlutterTts _flutterTts = FlutterTts();
+
   List<QuizQuestion> _questions = [];
 
   int _currentIndex = 0;
@@ -25,11 +29,58 @@ class _QuizScreenState extends State<QuizScreen> {
   String? _selectedAnswer;
   ApiContent? _currentApiContent;
   String? _errorMessage;
+  bool _isSpeaking = false;
 
   @override
   void initState() {
     super.initState();
+    _initTts();
     _loadQuiz();
+  }
+
+  @override
+  void dispose() {
+    _flutterTts.stop();
+    super.dispose();
+  }
+
+  Future<void> _initTts() async {
+    await _flutterTts.setLanguage("en-US");
+    await _flutterTts.setPitch(1.0);
+    await _flutterTts.setSpeechRate(0.5); // 0.5 is normal speed
+
+    // Updates UI when speaking starts/stops
+    _flutterTts.setStartHandler(() {
+      setState(() => _isSpeaking = true);
+    });
+
+    _flutterTts.setCompletionHandler(() {
+      setState(() => _isSpeaking = false);
+    });
+
+    _flutterTts.setCancelHandler(() {
+      setState(() => _isSpeaking = false);
+    });
+
+    _flutterTts.setErrorHandler((message) {
+      setState(() => _isSpeaking = false);
+    });
+  }
+
+  Future<void> _speakQuestion() async {
+    if (_questions.isEmpty) return;
+
+    // If already speaking, stop it.
+    if (_isSpeaking) {
+      await _flutterTts.stop();
+      return;
+    }
+
+    final q = _questions[_currentIndex];
+    // Read the Question AND the Options
+    String textToRead = "${q.question}... Is it... ${q.options.join(', or ')}?";
+
+    await _flutterTts.speak(textToRead);
   }
 
   Future<void> _loadQuiz() async {
@@ -65,6 +116,8 @@ class _QuizScreenState extends State<QuizScreen> {
       _currentApiContent = null;
     });
 
+    await _flutterTts.stop();
+
     final currentQ = _questions[_currentIndex];
     final content = await _repository.fetchLiveContent(currentQ);
 
@@ -78,7 +131,7 @@ class _QuizScreenState extends State<QuizScreen> {
 
   void _checkAnswer(String answer) {
     if (_answered) return;
-
+    _flutterTts.stop(); // Stop TTS when an answer is selected
     // FIX 1: Use .answer (matches your Model)
     final isCorrect = answer == _questions[_currentIndex].answer;
 
@@ -343,8 +396,10 @@ class _QuizScreenState extends State<QuizScreen> {
     // FIX 2: Use .answer
     final bool isCorrect = _selectedAnswer == currentQ.answer;
 
-    return Scaffold(
-      appBar: AppBar(
+    final AppBar appBar;
+    if (Platform.isIOS) {
+      appBar = AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           "Quest ${_currentIndex + 1}/${_questions.length}",
           style: GoogleFonts.orbitron(
@@ -354,6 +409,88 @@ class _QuizScreenState extends State<QuizScreen> {
         ),
         backgroundColor: Colors.transparent,
         actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 12),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.amber.withOpacity(0.3),
+                  Colors.amber.withOpacity(0.1),
+                ],
+              ),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.amber.withOpacity(0.2),
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            child: IconButton(
+              icon: const Icon(
+                Icons.tips_and_updates_rounded,
+                color: Colors.amber,
+              ),
+              onPressed: _showHint,
+            ),
+          ),
+        ],
+      );
+    } else if (Platform.isAndroid) {
+      appBar = AppBar(
+        title: Text(
+          "Quest ${_currentIndex + 1}/${_questions.length}",
+          style: GoogleFonts.orbitron(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1,
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 12),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.amber.withOpacity(0.3),
+                  Colors.amber.withOpacity(0.1),
+                ],
+              ),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.amber.withOpacity(0.2),
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            child: IconButton(
+              icon: const Icon(
+                Icons.tips_and_updates_rounded,
+                color: Colors.amber,
+              ),
+              onPressed: _showHint,
+            ),
+          ),
+        ],
+      );
+    } else {
+      appBar = AppBar(
+        title: Text(
+          "Quest ${_currentIndex + 1}/${_questions.length}",
+          style: GoogleFonts.orbitron(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1,
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+      );
+    }
+
+    return Scaffold(
+      appBar: appBar,
           Container(
             margin: const EdgeInsets.only(right: 12),
             decoration: BoxDecoration(
@@ -468,18 +605,34 @@ class _QuizScreenState extends State<QuizScreen> {
                     ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              currentQ.question,
-              style: GoogleFonts.orbitron(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
-              ),
-              textAlign: TextAlign.center,
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      currentQ.question,
+                      style: GoogleFonts.orbitron(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    _isSpeaking ? Icons.volume_up : Icons.volume_up_outlined,
+                    color: _isSpeaking ? Colors.greenAccent : Colors.white,
+                  ),
+                  onPressed: _speakQuestion,
+                ),
+              ],
             ),
           ),
+
           if (_answered)
             Padding(
               padding: const EdgeInsets.only(top: 10),

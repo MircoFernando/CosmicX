@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -183,8 +184,10 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     final user = FirebaseAuth.instance.currentUser;
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
+    final AppBar appBar;
+    if (Platform.isIOS) {
+      appBar = AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           'SETTINGS',
           style: GoogleFonts.orbitron(
@@ -195,7 +198,37 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-      ),
+      );
+    } else if (Platform.isAndroid) {
+      appBar = AppBar(
+        title: Text(
+          'SETTINGS',
+          style: GoogleFonts.orbitron(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.5,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      );
+    } else {
+      appBar = AppBar(
+        title: Text(
+          'SETTINGS',
+          style: GoogleFonts.orbitron(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.5,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      );
+    }
+
+    return Scaffold(
+      appBar: appBar,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
