@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../data/repositories/quiz_repository.dart';
 import '../data/models/quiz_question.dart';
 import '../data/repositories/user_repository.dart';
@@ -121,55 +122,118 @@ class _QuizScreenState extends State<QuizScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF0B0D17),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: const BorderSide(color: Color(0xFF00D4FF), width: 2),
+          borderRadius: BorderRadius.circular(24),
+          side: BorderSide(color: Theme.of(context).primaryColor, width: 2),
         ),
-        title: const Text(
-          "MISSION ACCOMPLISHED",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Orbitron',
-          ),
-          textAlign: TextAlign.center,
+        title: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Theme.of(context).primaryColor.withOpacity(0.3),
+                    Theme.of(context).primaryColor.withOpacity(0.1),
+                  ],
+                ),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.emoji_events_rounded,
+                color: Theme.of(context).primaryColor,
+                size: 50,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              "MISSION ACCOMPLISHED",
+              style: GoogleFonts.orbitron(
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.5,
+                fontSize: 18,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.stars, color: Colors.yellowAccent, size: 50),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             _buildScoreRow(
               "Mission XP:",
               "+$_sessionScore",
               Colors.greenAccent,
             ),
-            const Divider(color: Colors.grey),
+            const Divider(),
             _buildScoreRow(
               "Total Career XP:",
               "$totalCareerScore",
-              const Color(0xFF00D4FF),
+              Theme.of(context).primaryColor,
             ),
             const SizedBox(height: 20),
-            const Text(
-              "Database updated successfully.",
-              style: TextStyle(color: Colors.grey, fontSize: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.cloud_done_rounded,
+                  size: 16,
+                  color: Colors.grey[600],
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  "Progress saved",
+                  style: GoogleFonts.inter(
+                    color: Colors.grey[600],
+                    fontSize: 12,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
         actions: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF00D4FF),
-              foregroundColor: Colors.black,
-              minimumSize: const Size(double.infinity, 50),
+          Container(
+            width: double.infinity,
+            height: 50,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Theme.of(context).primaryColor,
+                  Theme.of(context).primaryColor.withOpacity(0.8),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Theme.of(context).primaryColor.withOpacity(0.3),
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                ),
+              ],
             ),
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context, true);
-            },
-            child: const Text("RETURN TO BASE"),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context, true);
+              },
+              child: Text(
+                "RETURN TO BASE",
+                style: GoogleFonts.orbitron(
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -184,14 +248,15 @@ class _QuizScreenState extends State<QuizScreen> {
         children: [
           Text(
             label,
-            style: const TextStyle(color: Colors.white70, fontSize: 16),
+            style: GoogleFonts.inter(fontSize: 15, color: Colors.grey[600]),
           ),
           Text(
             value,
-            style: TextStyle(
+            style: GoogleFonts.orbitron(
               color: color,
               fontSize: 24,
               fontWeight: FontWeight.bold,
+              letterSpacing: 0.5,
             ),
           ),
         ],
@@ -200,15 +265,52 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   void _showHint() {
+    final theme = Theme.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Mission Intel"),
-        content: Text(_currentApiContent?.hint ?? "Decrypting..."),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: Colors.amber.withOpacity(0.5), width: 1.5),
+        ),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.amber.withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.tips_and_updates_rounded,
+                color: Colors.amber,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              "Mission Intel",
+              style: GoogleFonts.orbitron(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          _currentApiContent?.hint ?? "Decrypting...",
+          style: GoogleFonts.inter(fontSize: 15, height: 1.5),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Copy That"),
+            child: Text(
+              "Copy That",
+              style: GoogleFonts.orbitron(
+                color: theme.primaryColor,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
@@ -239,15 +341,40 @@ class _QuizScreenState extends State<QuizScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Quest ${_currentIndex + 1}/${_questions.length}"),
+        title: Text(
+          "Quest ${_currentIndex + 1}/${_questions.length}",
+          style: GoogleFonts.orbitron(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1,
+          ),
+        ),
         backgroundColor: Colors.transparent,
         actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.lightbulb_outline,
-              color: Colors.yellowAccent,
+          Container(
+            margin: const EdgeInsets.only(right: 12),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.amber.withOpacity(0.3),
+                  Colors.amber.withOpacity(0.1),
+                ],
+              ),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.amber.withOpacity(0.2),
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                ),
+              ],
             ),
-            onPressed: _showHint,
+            child: IconButton(
+              icon: const Icon(
+                Icons.tips_and_updates_rounded,
+                color: Colors.amber,
+              ),
+              onPressed: _showHint,
+            ),
           ),
         ],
       ),
@@ -259,20 +386,80 @@ class _QuizScreenState extends State<QuizScreen> {
               width: double.infinity,
               margin: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.black26,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: theme.primaryColor.withOpacity(0.3)),
+                border: Border.all(
+                  color: theme.primaryColor.withOpacity(0.4),
+                  width: 1.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: theme.primaryColor.withOpacity(0.15),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                  ),
+                ],
               ),
               child: _isLoadingContent
                   ? const Center(child: CircularProgressIndicator())
                   : ClipRRect(
                       borderRadius: BorderRadius.circular(20),
-                      child: Image.network(
-                        _currentApiContent?.imageUrl ?? '',
-                        fit: BoxFit.cover,
-                        errorBuilder: (c, e, s) => const Center(
-                          child: Icon(Icons.broken_image, color: Colors.grey),
-                        ),
+                      child: Stack(
+                        children: [
+                          Image.network(
+                            _currentApiContent?.imageUrl ?? '',
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                            errorBuilder: (c, e, s) => Container(
+                              color: theme.cardColor,
+                              child: Center(
+                                child: Icon(
+                                  Icons.image_not_supported_outlined,
+                                  color: Colors.grey[400],
+                                  size: 60,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 12,
+                            left: 12,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    theme.primaryColor.withOpacity(0.9),
+                                    theme.primaryColor.withOpacity(0.7),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.radar,
+                                    color: Colors.white,
+                                    size: 14,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'LIVE DATA',
+                                    style: GoogleFonts.orbitron(
+                                      color: Colors.white,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
             ),
@@ -281,7 +468,11 @@ class _QuizScreenState extends State<QuizScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               currentQ.question,
-              style: theme.textTheme.headlineSmall?.copyWith(fontSize: 20),
+              style: GoogleFonts.orbitron(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+              ),
               textAlign: TextAlign.center,
             ),
           ),
@@ -291,31 +482,44 @@ class _QuizScreenState extends State<QuizScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
-                  vertical: 8,
+                  vertical: 10,
                 ),
                 decoration: BoxDecoration(
-                  color: isCorrect
-                      ? Colors.green.withOpacity(0.2)
-                      : Colors.red.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(20),
+                  gradient: LinearGradient(
+                    colors: isCorrect
+                        ? [
+                            Colors.green.withOpacity(0.3),
+                            Colors.green.withOpacity(0.1),
+                          ]
+                        : [
+                            Colors.red.withOpacity(0.3),
+                            Colors.red.withOpacity(0.1),
+                          ],
+                  ),
+                  borderRadius: BorderRadius.circular(25),
                   border: Border.all(
-                    color: isCorrect ? Colors.green : Colors.red,
+                    color: isCorrect
+                        ? Colors.green.withOpacity(0.6)
+                        : Colors.red.withOpacity(0.6),
+                    width: 1.5,
                   ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      isCorrect ? Icons.check_circle : Icons.error,
+                      isCorrect ? Icons.verified_rounded : Icons.cancel_rounded,
                       color: isCorrect ? Colors.green : Colors.red,
+                      size: 22,
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 10),
                     Text(
-                      isCorrect ? "CORRECT! +20 XP" : "WRONG ANSWER",
-                      style: TextStyle(
+                      isCorrect ? "CORRECT! +20 XP" : "INCORRECT",
+                      style: GoogleFonts.orbitron(
                         color: isCorrect ? Colors.green : Colors.red,
                         fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                        fontSize: 15,
+                        letterSpacing: 1,
                       ),
                     ),
                   ],
@@ -342,50 +546,69 @@ class _QuizScreenState extends State<QuizScreen> {
                   final bool isOptionCorrect = option == currentQ.answer;
                   final bool isOptionSelected = option == _selectedAnswer;
 
-                  // --- COLOR LOGIC ---
-                  Color cardColor = Colors.deepPurple;
-                  Color borderColor = Colors.deepPurpleAccent;
-
-                  if (_answered) {
-                    if (isOptionCorrect) {
-                      // Correct Answer: ALWAYS Green
-                      cardColor = Colors.green.shade700;
-                      borderColor = Colors.greenAccent;
-                    } else if (isOptionSelected) {
-                      // Selected Wrong Answer: Bright Red
-                      cardColor = Colors.red.shade800;
-                      borderColor = Colors.redAccent;
-                    } else {
-                      // Unselected Wrong Answers
-                      cardColor = Colors.red;
-                      borderColor = Colors.red;
-                    }
-                  }
-
                   return GestureDetector(
                     onTap: () => _checkAnswer(option),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
                       decoration: BoxDecoration(
-                        color: cardColor,
+                        gradient: LinearGradient(
+                          colors: _answered
+                              ? (isOptionCorrect
+                                    ? [
+                                        Colors.green.shade600,
+                                        Colors.green.shade700,
+                                      ]
+                                    : [
+                                        Colors.red.shade700,
+                                        Colors.red.shade800,
+                                      ])
+                              : [
+                                  theme.primaryColor,
+                                  theme.primaryColor.withOpacity(0.9),
+                                ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: borderColor,
+                          color: _answered
+                              ? (isOptionCorrect
+                                    ? Colors.greenAccent
+                                    : Colors.redAccent)
+                              : theme.primaryColor,
                           width:
                               _answered && (isOptionCorrect || isOptionSelected)
-                              ? 3
-                              : 1,
+                              ? 2.5
+                              : 2,
                         ),
+                        boxShadow:
+                            _answered && (isOptionCorrect || isOptionSelected)
+                            ? [
+                                BoxShadow(
+                                  color: isOptionCorrect
+                                      ? Colors.green.withOpacity(0.5)
+                                      : Colors.red.withOpacity(0.5),
+                                  blurRadius: 12,
+                                  spreadRadius: 2,
+                                ),
+                              ]
+                            : [
+                                BoxShadow(
+                                  color: theme.primaryColor.withOpacity(0.3),
+                                  blurRadius: 8,
+                                  spreadRadius: 1,
+                                ),
+                              ],
                       ),
                       alignment: Alignment.center,
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(12.0),
                         child: Text(
                           option,
-                          style: const TextStyle(
+                          style: GoogleFonts.inter(
                             color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -399,18 +622,51 @@ class _QuizScreenState extends State<QuizScreen> {
           if (_answered)
             Padding(
               padding: const EdgeInsets.all(20.0),
-              child: ElevatedButton(
-                onPressed: _nextQuestion,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.primaryColor,
-                  foregroundColor: Colors.black,
-                  minimumSize: const Size(double.infinity, 50),
+              child: Container(
+                width: double.infinity,
+                height: 56,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      theme.primaryColor,
+                      theme.primaryColor.withOpacity(0.8),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: theme.primaryColor.withOpacity(0.3),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                    ),
+                  ],
                 ),
-                child: Text(
-                  _currentIndex < _questions.length - 1
-                      ? "NEXT MISSION"
-                      : "FINISH DEBRIEF",
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                child: ElevatedButton(
+                  onPressed: _nextQuestion,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        _currentIndex < _questions.length - 1
+                            ? "NEXT MISSION"
+                            : "FINISH QUEST",
+                        style: GoogleFonts.orbitron(
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.arrow_forward_rounded),
+                    ],
+                  ),
                 ),
               ),
             ),
