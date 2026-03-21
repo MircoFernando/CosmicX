@@ -29,10 +29,9 @@ class AuthGate extends StatelessWidget {
               padding: const EdgeInsets.all(20),
               child: AspectRatio(
                 aspectRatio: 1,
-                child: Icon(
-                  Icons.rocket_launch_rounded,
-                  size: 100,
-                  color: Theme.of(context).primaryColor,
+                child: Image.asset(
+                  'assets/cosmix-logo.png',
+                  fit: BoxFit.contain,
                 ),
               ),
             );

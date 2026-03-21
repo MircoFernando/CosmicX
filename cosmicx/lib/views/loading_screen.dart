@@ -36,10 +36,10 @@ class _LoadingScreenState extends State<LoadingScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.rocket_launch_rounded,
-              size: 100,
-              color: Theme.of(context).primaryColor,
+            SizedBox(
+              width: 110,
+              height: 110,
+              child: Image.asset('assets/cosmix-logo.png', fit: BoxFit.contain),
             ),
             const SizedBox(height: 20),
             Text(

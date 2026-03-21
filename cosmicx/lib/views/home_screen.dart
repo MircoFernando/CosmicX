@@ -44,12 +44,32 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "COSMIC QUEST",
-          style: GoogleFonts.orbitron(
-            fontWeight: FontWeight.bold,
-            letterSpacing: 2,
-            fontSize: 20,
+        leadingWidth: 48,
+        titleSpacing: 8,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 10, top: 8, bottom: 8),
+          child: CircleAvatar(
+            backgroundColor: theme.primaryColor.withOpacity(0.15),
+            child: ClipOval(
+              child: Image.asset(
+                'assets/cosmix-logo.png',
+                fit: BoxFit.cover,
+                width: 30,
+                height: 30,
+              ),
+            ),
+          ),
+        ),
+        title: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            "COSMIC QUEST",
+            style: GoogleFonts.orbitron(
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+              fontSize: 18,
+            ),
           ),
         ),
         centerTitle: false,
