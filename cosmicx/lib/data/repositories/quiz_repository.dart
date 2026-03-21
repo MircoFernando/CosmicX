@@ -11,8 +11,14 @@ class ApiContent {
 }
 
 class QuizRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final String _apiKey = dotenv.env['NASA_API_KEY'] ?? 'DEMO_KEY';
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
+  String get _apiKey {
+    try {
+      return dotenv.env['NASA_API_KEY'] ?? 'DEMO_KEY';
+    } catch (_) {
+      return 'DEMO_KEY';
+    }
+  }
 
   Future<List<QuizQuestion>> fetchQuestions() async {
     try {

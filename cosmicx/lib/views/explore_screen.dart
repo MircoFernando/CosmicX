@@ -70,6 +70,271 @@ class _ExploreScreenState extends State<ExploreScreen>
     );
   }
 
+  void _showPostDetails(
+    ThemeData theme,
+    Map<String, dynamic> item,
+    String dateStr,
+  ) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.8,
+          decoration: BoxDecoration(
+            color: theme.scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            border: Border.all(color: theme.primaryColor.withOpacity(0.3)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 48,
+                  height: 5,
+                  margin: const EdgeInsets.only(top: 12, bottom: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(20, 6, 20, 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Image.network(
+                          item['image'] ?? '',
+                          width: double.infinity,
+                          height: 220,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              height: 220,
+                              color: theme.cardColor,
+                              alignment: Alignment.center,
+                              child: Icon(
+                                Icons.broken_image,
+                                size: 42,
+                                color: Colors.grey[400],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        item['title'] ?? 'Untitled',
+                        style: GoogleFonts.orbitron(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.access_time_rounded,
+                            size: 16,
+                            color: theme.primaryColor,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            dateStr,
+                            style: GoogleFonts.inter(
+                              color: theme.primaryColor,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      Text(
+                        item['description'] ?? 'No description available.',
+                        style: GoogleFonts.inter(fontSize: 14, height: 1.6),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showAsteroidDetails(ThemeData theme, Map<String, dynamic> asteroid) {
+    final name = asteroid['name']?.toString() ?? 'Unknown Asteroid';
+    final isHazardous = asteroid['is_potentially_hazardous_asteroid'] == true;
+    final diameter =
+        (asteroid['estimated_diameter']?['meters']?['estimated_diameter_max']
+                as num?)
+            ?.toDouble() ??
+        0.0;
+    final absoluteMagnitude =
+        (asteroid['absolute_magnitude_h'] as num?)?.toDouble() ?? 0.0;
+
+    final List closeApproachData =
+        asteroid['close_approach_data'] as List? ?? [];
+    final Map<String, dynamic> firstApproach = closeApproachData.isNotEmpty
+        ? Map<String, dynamic>.from(closeApproachData.first)
+        : <String, dynamic>{};
+
+    final velocity =
+        firstApproach['relative_velocity']?['kilometers_per_hour']
+            ?.toString() ??
+        '0';
+    final missDistance =
+        firstApproach['miss_distance']?['kilometers']?.toString() ?? 'N/A';
+    final approachDate =
+        firstApproach['close_approach_date']?.toString() ?? 'Unknown';
+    final nasaUrl = asteroid['nasa_jpl_url']?.toString() ?? 'N/A';
+
+    final speedStr =
+        "${((double.tryParse(velocity) ?? 0.0) / 1000).toStringAsFixed(1)}k km/h";
+    final sizeStr = "${diameter.toStringAsFixed(1)}m";
+    final missDistanceStr =
+        "${(double.tryParse(missDistance) ?? 0.0).toStringAsFixed(0)} km";
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.72,
+          decoration: BoxDecoration(
+            color: theme.scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            border: Border.all(color: theme.primaryColor.withOpacity(0.3)),
+          ),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 48,
+                    height: 5,
+                    margin: const EdgeInsets.only(bottom: 14),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+                Row(
+                  children: [
+                    Icon(
+                      isHazardous
+                          ? Icons.warning_amber_rounded
+                          : Icons.verified_rounded,
+                      color: isHazardous ? Colors.red : Colors.green,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        name,
+                        style: GoogleFonts.orbitron(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  isHazardous
+                      ? 'Potentially hazardous object'
+                      : 'No hazard warning for this object',
+                  style: GoogleFonts.inter(
+                    color: isHazardous ? Colors.red[300] : Colors.green[300],
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _buildAsteroidStatRow(theme, 'Estimated Diameter', sizeStr),
+                _buildAsteroidStatRow(theme, 'Relative Velocity', speedStr),
+                _buildAsteroidStatRow(theme, 'Miss Distance', missDistanceStr),
+                _buildAsteroidStatRow(
+                  theme,
+                  'Close Approach Date',
+                  approachDate,
+                ),
+                _buildAsteroidStatRow(
+                  theme,
+                  'Absolute Magnitude (H)',
+                  absoluteMagnitude.toStringAsFixed(1),
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  'NASA JPL Reference',
+                  style: GoogleFonts.orbitron(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: theme.primaryColor,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  nasaUrl,
+                  style: GoogleFonts.inter(fontSize: 12, color: Colors.white70),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildAsteroidStatRow(ThemeData theme, String label, String value) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: theme.primaryColor.withOpacity(0.2)),
+        color: theme.cardColor.withOpacity(0.4),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                color: Colors.grey[400],
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            value,
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   // --- TAB 1: ASTEROID WATCH ---
   Widget _buildAsteroidTab(ThemeData theme) {
     return FutureBuilder<List<Map<String, dynamic>>>(
@@ -179,6 +444,7 @@ class _ExploreScreenState extends State<ExploreScreen>
                 ),
               ),
               child: ListTile(
+                onTap: () => _showAsteroidDetails(theme, asteroid),
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 20,
                   vertical: 12,
@@ -310,144 +576,157 @@ class _ExploreScreenState extends State<ExploreScreen>
             String dateStr = item['date'] ?? '';
             if (dateStr.length > 10) dateStr = dateStr.substring(0, 10);
 
-            return Container(
-              margin: const EdgeInsets.all(16),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Stack(
-                  children: [
-                    // Image
-                    Positioned.fill(
-                      child: Image.network(
-                        item['image'],
-                        fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                        loadingProgress.expectedTotalBytes!
-                                  : null,
-                            ),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: theme.cardColor,
-                            child: Center(
-                              child: Icon(
-                                Icons.broken_image,
-                                size: 60,
-                                color: Colors.grey[400],
+            return GestureDetector(
+              onTap: () => _showPostDetails(theme, item, dateStr),
+              child: Container(
+                margin: const EdgeInsets.all(16),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Stack(
+                    children: [
+                      // Image
+                      Positioned.fill(
+                        child: Image.network(
+                          item['image'],
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value:
+                                    loadingProgress.expectedTotalBytes != null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                    : null,
                               ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-
-                    // Gradient Overlay for Text Readability
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.transparent,
-                              Colors.black.withOpacity(0.85),
-                            ],
-                          ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: theme.cardColor,
+                              child: Center(
+                                child: Icon(
+                                  Icons.broken_image,
+                                  size: 60,
+                                  color: Colors.grey[400],
+                                ),
+                              ),
+                            );
+                          },
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              item['title'],
-                              style: GoogleFonts.orbitron(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.access_time_rounded,
-                                  size: 16,
-                                  color: theme.primaryColor,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  dateStr,
-                                  style: GoogleFonts.inter(
-                                    color: theme.primaryColor,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
+                      ),
+
+                      // Gradient Overlay for Text Readability
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                Colors.black.withOpacity(0.85),
                               ],
                             ),
-                            const SizedBox(height: 12),
-                            Text(
-                              item['description'],
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.inter(
-                                color: Colors.white70,
-                                fontSize: 13,
-                                height: 1.5,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                item['title'],
+                                style: GoogleFonts.orbitron(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  letterSpacing: 0.5,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    // Page Indicator
-                    Positioned(
-                      top: 16,
-                      right: 16,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              theme.primaryColor.withOpacity(0.9),
-                              theme.primaryColor.withOpacity(0.7),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.access_time_rounded,
+                                    size: 16,
+                                    color: theme.primaryColor,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    dateStr,
+                                    style: GoogleFonts.inter(
+                                      color: theme.primaryColor,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                item['description'],
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.inter(
+                                  color: Colors.white70,
+                                  fontSize: 13,
+                                  height: 1.5,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Tap to read full description',
+                                style: GoogleFonts.inter(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ],
                           ),
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: theme.primaryColor.withOpacity(0.3),
-                              blurRadius: 8,
-                              spreadRadius: 1,
-                            ),
-                          ],
                         ),
-                        child: Text(
-                          '${index + 1} / ${images.length}',
-                          style: GoogleFonts.orbitron(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
+                      ),
+
+                      // Page Indicator
+                      Positioned(
+                        top: 16,
+                        right: 16,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                theme.primaryColor.withOpacity(0.9),
+                                theme.primaryColor.withOpacity(0.7),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: theme.primaryColor.withOpacity(0.3),
+                                blurRadius: 8,
+                                spreadRadius: 1,
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            '${index + 1} / ${images.length}',
+                            style: GoogleFonts.orbitron(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );

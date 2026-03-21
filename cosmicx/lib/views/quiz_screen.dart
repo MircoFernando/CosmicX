@@ -7,17 +7,25 @@ import '../data/models/quiz_question.dart';
 import '../data/repositories/user_repository.dart';
 
 class QuizScreen extends StatefulWidget {
-  const QuizScreen({super.key});
+  const QuizScreen({
+    super.key,
+    this.repository,
+    this.userRepository,
+    this.flutterTts,
+  });
+
+  final QuizRepository? repository;
+  final UserRepository? userRepository;
+  final FlutterTts? flutterTts;
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
 }
 
 class _QuizScreenState extends State<QuizScreen> {
-  final QuizRepository _repository = QuizRepository();
-  final UserRepository _userRepo = UserRepository();
-
-  final FlutterTts _flutterTts = FlutterTts();
+  late final QuizRepository _repository;
+  late final UserRepository _userRepo;
+  late final FlutterTts _flutterTts;
 
   List<QuizQuestion> _questions = [];
 
@@ -34,6 +42,9 @@ class _QuizScreenState extends State<QuizScreen> {
   @override
   void initState() {
     super.initState();
+    _repository = widget.repository ?? QuizRepository();
+    _userRepo = widget.userRepository ?? UserRepository();
+    _flutterTts = widget.flutterTts ?? FlutterTts();
     _initTts();
     _loadQuiz();
   }
