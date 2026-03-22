@@ -4,7 +4,9 @@ import 'dart:async'; // For the Timer
 import 'auth_gate.dart'; // <--- CHANGED: Import the Gate, not the Login Screen
 
 class LoadingScreen extends StatefulWidget {
-  const LoadingScreen({super.key});
+  final Function(bool)? onThemeChange;
+
+  const LoadingScreen({super.key, this.onThemeChange});
 
   @override
   State<LoadingScreen> createState() => _LoadingScreenState();
@@ -21,7 +23,9 @@ class _LoadingScreenState extends State<LoadingScreen> {
         // The Gate will decide whether to show 'Login' or 'Home'
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const AuthGate()),
+          MaterialPageRoute(
+            builder: (context) => AuthGate(onThemeChange: widget.onThemeChange),
+          ),
         );
       }
     });
@@ -36,14 +40,21 @@ class _LoadingScreenState extends State<LoadingScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(
-              width: 110,
-              height: 110,
-              child: Image.asset('assets/cosmix-logo.png', fit: BoxFit.contain),
+            CircleAvatar(
+              radius: 55,
+              backgroundColor: Theme.of(context).primaryColor.withOpacity(0.15),
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/cosmix-logo.png',
+                  width: 90,
+                  height: 90,
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
             const SizedBox(height: 20),
             Text(
-              "COSMIC QUEST",
+              "COSMICX QUEST",
               style: GoogleFonts.orbitron(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -58,11 +69,6 @@ class _LoadingScreenState extends State<LoadingScreen> {
                 backgroundColor: Colors.white24,
                 color: Theme.of(context).primaryColor,
               ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              "Initializing systems...",
-              style: GoogleFonts.inter(color: Colors.grey[600], fontSize: 14),
             ),
           ],
         ),

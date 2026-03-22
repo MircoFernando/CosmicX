@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
-import 'views/auth_gate.dart'; // Import the new gate
+import 'views/loading_screen.dart';
 import 'theme/app_theme.dart';
 import 'services/theme_service.dart';
 
@@ -66,9 +65,7 @@ class _CosmicQuestAppState extends State<CosmicQuestApp> {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: _themeMode,
-
-      // The AuthGate handles routing automatically now!
-      home: AuthGate(onThemeChange: updateTheme),
+      home: LoadingScreen(onThemeChange: updateTheme),
     );
   }
 }
