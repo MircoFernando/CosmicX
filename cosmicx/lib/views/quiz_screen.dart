@@ -385,15 +385,17 @@ class _QuizScreenState extends State<QuizScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    if (_isLoadingQuiz)
+    if (_isLoadingQuiz) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    if (_questions.isEmpty)
+    }
+    if (_questions.isEmpty) {
       return Scaffold(
         body: Center(
           child: Text("No quests available.", style: GoogleFonts.inter()),
         ),
       );
-    if (_errorMessage != null)
+    }
+    if (_errorMessage != null) {
       return Scaffold(
         body: Center(
           child: Text(
@@ -402,6 +404,7 @@ class _QuizScreenState extends State<QuizScreen> {
           ),
         ),
       );
+    }
 
     final currentQ = _questions[_currentIndex];
     // FIX 2: Use .answer

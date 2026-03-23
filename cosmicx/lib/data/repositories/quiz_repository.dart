@@ -69,8 +69,6 @@ class QuizRepository {
     // 1. Search by specific NASA ID (e.g., PIA24333)
     final url = 'https://images-api.nasa.gov/search?nasa_id=$nasaId';
 
-    print("DEBUG LIB URL: $url");
-
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {

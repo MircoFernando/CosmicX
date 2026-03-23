@@ -17,7 +17,6 @@ class UserRepository {
       }
       return 0; // Default if new user
     } catch (e) {
-      print("Error fetching score: $e");
       return 0;
     }
   }
@@ -74,7 +73,6 @@ class UserRepository {
         };
       }).toList();
     } catch (e) {
-      print("Leaderboard Error: $e");
       return [];
     }
   }
