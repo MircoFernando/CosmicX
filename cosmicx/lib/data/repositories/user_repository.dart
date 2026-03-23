@@ -5,7 +5,7 @@ class UserRepository {
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
   FirebaseAuth get _auth => FirebaseAuth.instance;
 
-  // 1. Get the current total score from Firebase
+  // Get the current total score from Firebase
   Future<int> getUserScore() async {
     final user = _auth.currentUser;
     if (user == null) return 0; // Safety check
@@ -21,22 +21,21 @@ class UserRepository {
     }
   }
 
-  // 2. Add points to Firebase (Transaction ensures accuracy)
+  // Add points to Firebase
   Future<int> updateUserScore(int sessionPoints) async {
     final user = _auth.currentUser;
     if (user == null) return 0;
 
     final userRef = _firestore.collection('users').doc(user.uid);
 
-    // Run a transaction to safely update the score
     return await _firestore.runTransaction((transaction) async {
       final snapshot = await transaction.get(userRef);
 
       if (!snapshot.exists) {
-        // First time user? Create the doc.
+        // Create the doc.
         transaction.set(userRef, {
           'score': sessionPoints,
-          'email': user.email, // Useful for leaderboard later
+          'email': user.email,
           'last_active': FieldValue.serverTimestamp(),
         });
         return sessionPoints;
@@ -50,7 +49,7 @@ class UserRepository {
         'last_active': FieldValue.serverTimestamp(),
       });
 
-      return newTotal; // Return the new total to show in UI
+      return newTotal;
     });
   }
 
@@ -58,15 +57,14 @@ class UserRepository {
     try {
       final snapshot = await _firestore
           .collection('users')
-          .orderBy('score', descending: true) // Highest score first
-          .limit(10) // Only get top 10
+          .orderBy('score', descending: true)
+          .limit(10)
           .get();
 
       return snapshot.docs.map((doc) {
         final data = doc.data();
         return {
           'id': doc.id,
-          // If name is missing, use "Cadet" + first 4 chars of ID
           'name': data['name'] ?? 'Cadet ${doc.id.substring(0, 4)}',
           'score': data['score'] ?? 0,
           'email': data['email'] ?? '',

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'dart:async'; // For the Timer
-import 'auth_gate.dart'; // <--- CHANGED: Import the Gate, not the Login Screen
+import 'dart:async'; // Timer
+import 'auth_gate.dart';
 
 class LoadingScreen extends StatefulWidget {
   final Function(bool)? onThemeChange;
@@ -20,7 +20,6 @@ class _LoadingScreenState extends State<LoadingScreen> {
     Timer(const Duration(seconds: 10), () {
       if (mounted) {
         // Navigate to the AuthGate
-        // The Gate will decide whether to show 'Login' or 'Home'
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -33,7 +32,6 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // This part stays exactly the same!
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(

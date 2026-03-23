@@ -335,7 +335,7 @@ class _ExploreScreenState extends State<ExploreScreen>
     );
   }
 
-  // --- TAB 1: ASTEROID WATCH ---
+  // TAB 1: ASTEROID WATCH
   Widget _buildAsteroidTab(ThemeData theme) {
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: _asteroidsFuture,
@@ -532,7 +532,7 @@ class _ExploreScreenState extends State<ExploreScreen>
     );
   }
 
-  // --- TAB 2: EARTH GALLERY ---
+  //TAB 2: EARTH GALLERY
   Widget _buildGalleryTab(ThemeData theme) {
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: _galleryFuture,

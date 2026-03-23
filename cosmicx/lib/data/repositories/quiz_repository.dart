@@ -47,7 +47,7 @@ class QuizRepository {
     }
   }
 
-  // --- APOD LOGIC (Unchanged) ---
+  // --- APOD LOGIC ---
   Future<ApiContent> _fetchApodContent(String date) async {
     final url =
         'https://api.nasa.gov/planetary/apod?api_key=$_apiKey&date=$date';
@@ -64,9 +64,9 @@ class QuizRepository {
     throw Exception("APOD Failed");
   }
 
-  // --- NEW: NASA IMAGE LIBRARY LOGIC ---
+  // --- NASA IMAGE LIBRARY LOGIC ---
   Future<ApiContent> _fetchLibraryContent(String nasaId) async {
-    // 1. Search by specific NASA ID (e.g., PIA24333)
+    // Search by specific NASA ID
     final url = 'https://images-api.nasa.gov/search?nasa_id=$nasaId';
 
     final response = await http.get(Uri.parse(url));
@@ -76,18 +76,16 @@ class QuizRepository {
       final items = data['collection']['items'] as List;
 
       if (items.isNotEmpty) {
-        final item = items[0]; // Get the first result
+        final item = items[0];
 
-        // 2. Extract Image URL
-        // The image link is usually in the 'links' array
+        // Extract Image URL
         String imageUrl = '';
         if (item['links'] != null) {
           imageUrl = item['links'][0]['href'];
-          // Sometimes these are http, force https to avoid iOS errors
           imageUrl = imageUrl.replaceAll('http:', 'https:');
         }
 
-        // 3. Extract Hint from Description
+        // Extract Hint from Description
         String description =
             item['data'][0]['description'] ?? 'Classified Mars Data.';
         String shortHint = description.length > 120
