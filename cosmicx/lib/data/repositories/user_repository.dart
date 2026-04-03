@@ -5,6 +5,13 @@ class UserRepository {
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
   FirebaseAuth get _auth => FirebaseAuth.instance;
 
+  int _asInt(dynamic value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value) ?? 0;
+    return 0;
+  }
+
   // Get the current total score from Firebase
   Future<int> getUserScore() async {
     final user = _auth.currentUser;
@@ -13,7 +20,7 @@ class UserRepository {
     try {
       final doc = await _firestore.collection('users').doc(user.uid).get();
       if (doc.exists && doc.data() != null) {
-        return doc.data()!['score'] as int? ?? 0;
+        return _asInt(doc.data()!['score']);
       }
       return 0; // Default if new user
     } catch (e) {
@@ -41,7 +48,7 @@ class UserRepository {
         return sessionPoints;
       }
 
-      final currentScore = snapshot.data()?['score'] as int? ?? 0;
+      final currentScore = _asInt(snapshot.data()?['score']);
       final newTotal = currentScore + sessionPoints;
 
       transaction.update(userRef, {
@@ -51,6 +58,36 @@ class UserRepository {
 
       return newTotal;
     });
+  }
+
+  Stream<int> watchUserScore() {
+    final user = _auth.currentUser;
+    if (user == null) return Stream<int>.value(0);
+
+    return _firestore.collection('users').doc(user.uid).snapshots().map((doc) {
+      final data = doc.data();
+      if (data == null) return 0;
+      return _asInt(data['score']);
+    });
+  }
+
+  Stream<List<Map<String, dynamic>>> watchLeaderboard({int limit = 10}) {
+    return _firestore
+        .collection('users')
+        .orderBy('score', descending: true)
+        .limit(limit)
+        .snapshots()
+        .map((snapshot) {
+          return snapshot.docs.map((doc) {
+            final data = doc.data();
+            return {
+              'id': doc.id,
+              'name': data['name'] ?? 'Cadet ${doc.id.substring(0, 4)}',
+              'score': _asInt(data['score']),
+              'email': data['email'] ?? '',
+            };
+          }).toList();
+        });
   }
 
   Future<List<Map<String, dynamic>>> getLeaderboard() async {
@@ -66,7 +103,7 @@ class UserRepository {
         return {
           'id': doc.id,
           'name': data['name'] ?? 'Cadet ${doc.id.substring(0, 4)}',
-          'score': data['score'] ?? 0,
+          'score': _asInt(data['score']),
           'email': data['email'] ?? '',
         };
       }).toList();
