@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
-import 'package:firebase_ui_auth/firebase_ui_auth.dart'; // The magic package
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'main_hub_screen.dart'; // Your Home Screen
+import 'main_hub_screen.dart';
 
 class AuthGate extends StatelessWidget {
   final Function(bool)? onThemeChange;
@@ -14,12 +14,12 @@ class AuthGate extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
-        // 1. If user is logged in, show the App
+        // If user is logged in, show the App
         if (snapshot.hasData) {
           return MainHubScreen(onThemeChange: onThemeChange);
         }
 
-        // 2. If user is NOT logged in, show the Pre-built Login Screen
+        // If user is NOT logged in, show the Pre-built Login Screen
         return SignInScreen(
           providers: [
             EmailAuthProvider(), // Enable Email/Password
@@ -29,10 +29,11 @@ class AuthGate extends StatelessWidget {
               padding: const EdgeInsets.all(20),
               child: AspectRatio(
                 aspectRatio: 1,
-                child: Icon(
-                  Icons.rocket_launch_rounded,
-                  size: 100,
-                  color: Theme.of(context).primaryColor,
+                child: ClipOval(
+                  child: Image.asset(
+                    'assets/cosmix-logo.png',
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             );

@@ -5,7 +5,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../models/apod_model.dart';
 
 class NasaRepository {
-  // Your API Key from the brief
   final String _apiKey = dotenv.env['NASA_API_KEY'] ?? 'DEMO_KEY';
   final String _baseUrl = 'https://api.nasa.gov/planetary/apod';
 
@@ -13,14 +12,14 @@ class NasaRepository {
     final prefs = await SharedPreferences.getInstance();
 
     try {
-      // 1. Try to fetch from NASA API
+      // fetch from NASA API
       final response = await http.get(Uri.parse('$_baseUrl?api_key=$_apiKey'));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final apod = ApodModel.fromJson(data);
 
-        // 2. Save to Local Storage (Crucial for First Class Grade)
+        // Save to Local Storage
         await prefs.setString('cached_apod', json.encode(apod.toJson()));
 
         return apod;
@@ -28,7 +27,7 @@ class NasaRepository {
         throw Exception('Failed to contact Houston.');
       }
     } catch (e) {
-      // 3. If Network Fails, Load from Cache
+      //Load from Cache
       if (prefs.containsKey('cached_apod')) {
         final cachedData = json.decode(prefs.getString('cached_apod')!);
         return ApodModel.fromJson(cachedData);
@@ -37,7 +36,7 @@ class NasaRepository {
     }
   }
 
-  // 1. Fetch Near Earth Objects (Asteroids)
+  // Fetch Near Earth Objects (Asteroids)
   Future<List<Map<String, dynamic>>> fetchAsteroids() async {
     final now = DateTime.now();
     final formattedDate =
@@ -52,7 +51,6 @@ class NasaRepository {
       final data = json.decode(response.body);
       final Map<String, dynamic> dates = data['near_earth_objects'];
 
-      // The API returns a map with the date as the key. We just want the list.
       if (dates.containsKey(formattedDate)) {
         return List<Map<String, dynamic>>.from(dates[formattedDate]);
       }
@@ -62,9 +60,8 @@ class NasaRepository {
     }
   }
 
-  // 3. Fetch Earth Gallery (NASA Image Library) - 100% Reliable
+  // Fetch Earth Gallery (NASA Image Library)
   Future<List<Map<String, dynamic>>> fetchEarthGallery() async {
-    // We search for "Earth" and ensure we only get "images"
     final url = 'https://images-api.nasa.gov/search?q=earth&media_type=image';
 
     final response = await http.get(Uri.parse(url));
@@ -73,7 +70,6 @@ class NasaRepository {
       final data = json.decode(response.body);
       final List items = data['collection']['items'];
 
-      // Transform the complex NASA data into a simple list
       return items
           .take(20)
           .map((item) {
@@ -83,7 +79,6 @@ class NasaRepository {
             return {
               'title': data['title'],
               'description': data['description'] ?? 'No description.',
-              // Use the 'href' of the first link (usually the thumbnail/small image)
               'image': links.isNotEmpty ? links[0]['href'] : '',
               'date': data['date_created'],
             };

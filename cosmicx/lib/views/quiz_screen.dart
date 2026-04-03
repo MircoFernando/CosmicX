@@ -7,17 +7,25 @@ import '../data/models/quiz_question.dart';
 import '../data/repositories/user_repository.dart';
 
 class QuizScreen extends StatefulWidget {
-  const QuizScreen({super.key});
+  const QuizScreen({
+    super.key,
+    this.repository,
+    this.userRepository,
+    this.flutterTts,
+  });
+
+  final QuizRepository? repository;
+  final UserRepository? userRepository;
+  final FlutterTts? flutterTts;
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
 }
 
 class _QuizScreenState extends State<QuizScreen> {
-  final QuizRepository _repository = QuizRepository();
-  final UserRepository _userRepo = UserRepository();
-
-  final FlutterTts _flutterTts = FlutterTts();
+  late final QuizRepository _repository;
+  late final UserRepository _userRepo;
+  late final FlutterTts _flutterTts;
 
   List<QuizQuestion> _questions = [];
 
@@ -34,6 +42,9 @@ class _QuizScreenState extends State<QuizScreen> {
   @override
   void initState() {
     super.initState();
+    _repository = widget.repository ?? QuizRepository();
+    _userRepo = widget.userRepository ?? UserRepository();
+    _flutterTts = widget.flutterTts ?? FlutterTts();
     _initTts();
     _loadQuiz();
   }
@@ -374,15 +385,17 @@ class _QuizScreenState extends State<QuizScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    if (_isLoadingQuiz)
+    if (_isLoadingQuiz) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    if (_questions.isEmpty)
+    }
+    if (_questions.isEmpty) {
       return Scaffold(
         body: Center(
           child: Text("No quests available.", style: GoogleFonts.inter()),
         ),
       );
-    if (_errorMessage != null)
+    }
+    if (_errorMessage != null) {
       return Scaffold(
         body: Center(
           child: Text(
@@ -391,6 +404,7 @@ class _QuizScreenState extends State<QuizScreen> {
           ),
         ),
       );
+    }
 
     final currentQ = _questions[_currentIndex];
     // FIX 2: Use .answer

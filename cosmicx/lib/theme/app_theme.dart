@@ -9,7 +9,7 @@ class AppTheme {
   static const Color marsRed = Color(0xFFFF5E5B); // Errors
   static const Color voidGrey = Color(0xFF1F2937); // Cards
 
-  // Light Mode Colors (High Contrast for Accessibility)
+  // Light Mode Colors
   static const Color skyWhite = Color(0xFFFFFFFF);
   static const Color deepNavy = Color(0xFF0B3D91); // NASA Blue
   static const Color textBlack = Color(0xFF111827);

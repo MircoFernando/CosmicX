@@ -377,7 +377,70 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                   Switch(
                     value: _isDarkMode,
                     onChanged: _toggleDarkMode,
-                    activeColor: theme.primaryColor,
+                    activeThumbColor: theme.primaryColor,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 30),
+
+            const Divider(),
+            const SizedBox(height: 20),
+
+            // About Section
+            Text(
+              'About',
+              style: GoogleFonts.orbitron(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: theme.cardColor,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: theme.primaryColor.withOpacity(0.2)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.auto_awesome_rounded,
+                        color: theme.primaryColor,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        'CosmicX',
+                        style: GoogleFonts.orbitron(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Explore space-themed learning quests and build your cosmic knowledge every day.',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      color: theme.textTheme.bodyMedium?.color,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Version 1.0.0',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
                   ),
                 ],
               ),
